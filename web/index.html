@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="description" content="Mfumo wa usafirishaji wa mizigo">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Logistic">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+    <meta name="theme-color" content="#1F4FD8">
+
+  <title>Logistic</title>
+  <link rel="manifest" href="manifest.json">
+
+  <!-- PDF.js: inahitajika na syncfusion_flutter_pdfviewer kuonyesha PDF (ankara/ripoti) kwenye web -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.9.155/pdf.min.mjs" type="module"></script>
+  <script type="module">
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.9.155/pdf.worker.min.mjs";
+  </script>
+  <style>
+    /* Skrini ya logo inayoonekana wakati app inapakia (inaondolewa Flutter ikishaonyesha ukurasa wa kwanza) */
+    #app-splash { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 18px; background: #F4F6FB; z-index: 9999; transition: opacity .3s ease; }
+    #app-splash img { width: 120px; height: auto; animation: app-pulse 1.6s ease-in-out infinite; }
+    #app-splash span { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #1F4FD8;
+      font-size: 15px; font-weight: 600; letter-spacing: .3px; }
+    @keyframes app-pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(.94); opacity: .8; } }
+    @media (prefers-color-scheme: dark) { #app-splash { background: #0F172A; } #app-splash span { color: #93B4FF; } }
+  </style>
+</head>
+<body>
+  <div id="app-splash">
+    <img id="app-splash-logo" src="icons/logo.png" alt="">
+    <span id="app-splash-name">&nbsp;</span>
+  </div>
+  <script>
+    // Jina, logo na rangi ya kampuni - kabla Flutter haijapakia, na kila branding ikibadilika
+    // (Dart inaita window.applyBranding - tazama lib/core/web/web_branding_web.dart).
+    (function () {
+      function server() {
+        try {
+          var s = localStorage.getItem('flutter.app.server');
+          if (s) { s = JSON.parse(s); if (s) return s.replace(/\/+$/, ''); }
+        } catch (e) {}
+        return '';
+      }
+      function absolute(url) {
+        if (!url) return url;
+        if (/^https?:\/\//.test(url) || url.indexOf('data:') === 0) return url;
+        return server() + (url.charAt(0) === '/' ? '' : '/') + url;
+      }
+      function setLink(rel, href) {
+        var links = document.querySelectorAll('link[rel="' + rel + '"]');
+        if (!links.length) {
+          var l = document.createElement('link');
+          l.rel = rel;
+          document.head.appendChild(l);
+          links = [l];
+        }
+        for (var i = 0; i < links.length; i++) {
+          links[i].href = href;
+          if (rel === 'icon') links[i].removeAttribute('type');
+        }
+      }
+      // Logo yenyewe inahifadhiwa ndani ya browser (data URL) - splash inaionyesha papo hapo bila kusubiri server.
+      var LOGO_URL = 'logistic.logo.url', LOGO_DATA = 'logistic.logo.data';
+      function stored(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+      function setLogo(src) {
+        var img = document.getElementById('app-splash-logo');
+        if (!img || !src || img.getAttribute('src') === src) return;
+        // pakia kwanza, kisha badilisha - logo ya zamani haipotei wakati mpya inapakuliwa
+        var probe = new Image();
+        probe.onload = function () { img.src = src; };
+        probe.src = src;
+      }
+      function cacheLogo(url) {
+        if (!url || url.indexOf('data:') === 0) return;
+        if (stored(LOGO_URL) === url && stored(LOGO_DATA)) return;
+        fetch(url).then(function (r) { return r.ok ? r.blob() : null; }).then(function (blob) {
+          if (!blob || blob.size > 600000) return;
+          var reader = new FileReader();
+          reader.onload = function () {
+            try {
+              localStorage.setItem(LOGO_DATA, reader.result);
+              localStorage.setItem(LOGO_URL, url);
+            } catch (e) {}
+          };
+          reader.readAsDataURL(blob);
+        }).catch(function () {});
+      }
+      // 1) logo iliyohifadhiwa - papo hapo
+      (function () {
+        var data = stored(LOGO_DATA);
+        if (data) {
+          var img = document.getElementById('app-splash-logo');
+          if (img) img.src = data;
+          setLink('icon', data);
+          setLink('apple-touch-icon', data);
+        }
+      })();
+      window.applyBranding = function (b) {
+        try {
+          if (typeof b === 'string') b = JSON.parse(b);
+          if (!b || !b.resolved) return;
+          if (b.name) {
+            document.title = b.name;
+            var t = document.querySelector('meta[name="apple-mobile-web-app-title"]');
+            if (t) t.content = b.name;
+            var n = document.getElementById('app-splash-name');
+            if (n) n.textContent = b.name;
+          }
+          if (b.logoUrl) {
+            var logo = absolute(b.logoUrl);
+            // logo ile ile iliyohifadhiwa -> tumia nakala ya ndani; mpya (v=... imebadilika) -> pakua na hifadhi
+            var cached = stored(LOGO_URL) === logo ? stored(LOGO_DATA) : null;
+            var src = cached || logo;
+            setLink('icon', src);
+            setLink('apple-touch-icon', src);
+            setLogo(src);
+            if (!cached && /^https?:/.test(logo)) cacheLogo(logo);
+          } else if (b.logoUrl === null) {
+            try { localStorage.removeItem(LOGO_DATA); localStorage.removeItem(LOGO_URL); } catch (e) {}
+          }
+          if (b.primaryColor) {
+            var meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.content = b.primaryColor;
+            var name = document.getElementById('app-splash-name');
+            if (name) name.style.color = b.primaryColor;
+          }
+        } catch (e) {}
+      };
+      // 2) branding iliyohifadhiwa na Flutter (jina, rangi)
+      try {
+        var saved = localStorage.getItem('flutter.app.branding');
+        if (saved) window.applyBranding(JSON.parse(JSON.parse(saved)));
+      } catch (e) {}
+      // 3) branding mpya kutoka server (ikiwa anwani ya server inajulikana)
+      var api = server() || '';
+      var slug = '';
+      try { slug = JSON.parse(localStorage.getItem('flutter.app.company') || '""') || ''; } catch (e) {}
+      if (api) {
+        fetch(api + '/api/public/branding' + (slug ? '?company=' + encodeURIComponent(slug) : ''))
+          .then(function (r) { return r.ok ? r.json() : null; })
+          .then(window.applyBranding)
+          .catch(function () {});
+      }
+    })();
+  </script>
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      var s = document.getElementById('app-splash');
+      if (!s) return;
+      s.style.opacity = '0';
+      setTimeout(function () { s.remove(); }, 350);
+    });
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
