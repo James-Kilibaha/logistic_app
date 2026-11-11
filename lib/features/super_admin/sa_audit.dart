@@ -114,7 +114,7 @@ class _SaAuditState extends State<SaAudit> {
             SizedBox(
               width: 260,
               child: DropdownButtonFormField<String?>(
-                value: _action,
+                initialValue: _action,
                 isExpanded: true,
                 decoration: InputDecoration(labelText: 'saAuditAction'.tr, isDense: true),
                 items: [

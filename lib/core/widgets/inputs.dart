@@ -213,7 +213,7 @@ class AppDropdown<T> extends StatelessWidget {
         FieldLabel(label, required: required),
         DropdownButtonFormField<T>(
           key: ValueKey<Object?>(selected),
-          value: selected,
+          initialValue: selected,
           isExpanded: true,
           borderRadius: BorderRadius.circular(12),
           dropdownColor: context.palette.surface,

@@ -200,7 +200,7 @@ class _HandedOverTabState extends State<HandedOverTab> with AutomaticKeepAliveCl
               constraints: const BoxConstraints(minWidth: 180, maxWidth: 260),
               child: DropdownButtonFormField<String?>(
                 isExpanded: true,
-                value: _staffId,
+                initialValue: _staffId,
                 decoration: InputDecoration(
                   labelText: 'handedOverBy'.tr,
                   isDense: true,

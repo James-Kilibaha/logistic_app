@@ -10,7 +10,6 @@ import 'core/client_info.dart';
 import 'core/api/api_client.dart';
 import 'core/branding.dart';
 import 'core/session.dart';
-import 'core/theme/app_theme.dart';
 import 'core/widgets/brand_splash.dart';
 import 'core/widgets/feedback.dart';
 
