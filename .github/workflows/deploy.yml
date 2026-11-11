@@ -1,18 +1,24 @@
 name: Frontend Web Deploy
 
 on:
-  push:
+  pull_request:
     branches:
       - main
       - uat
+    types:
+      - closed
 
 jobs:
   deploy-web:
+    # Only run if the PR was actually merged (not just closed without merging)
+    if: github.event.pull_request.merged == true
     runs-on: self-hosted
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -31,14 +37,14 @@ jobs:
         run: |
           echo "Starting frontend deployment..."
           
-          # If pushing to main (Production)
-          if [[ "${{ github.ref }}" == "refs/heads/main" ]]; then
+          # Check which branch it was merged into
+          TARGET_BRANCH="${{ github.event.pull_request.base.ref }}"
+          
+          if [[ "$TARGET_BRANCH" == "main" ]]; then
             echo "Deploying Frontend to Production..."
             rsync -av --delete build/web/ /Data/www/logistics/prod/frontend/
             echo "Production frontend deployment complete!"
-          
-          # If pushing to uat (UAT)
-          elif [[ "${{ github.ref }}" == "refs/heads/uat" ]]; then
+          elif [[ "$TARGET_BRANCH" == "uat" ]]; then
             echo "Deploying Frontend to UAT..."
             rsync -av --delete build/web/ /Data/www/logistics/uat/frontend/
             echo "UAT frontend deployment complete!"
