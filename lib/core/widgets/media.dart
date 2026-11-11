@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:file_saver/file_saver.dart';

@@ -223,7 +223,7 @@ class _ArrivalsPageState extends State<ArrivalsPage> {
                       runSpacing: 4,
                       crossAxisAlignment: WrapCrossAlignment.center,
                       children: [
-                        Text('${J.str(customer['name'])}', style: const TextStyle(fontWeight: FontWeight.w800)),
+                        Text(J.str(customer['name']), style: const TextStyle(fontWeight: FontWeight.w800)),
                         Text('#${J.str(r['invoiceNumber'])}', style: TextStyle(color: p.muted)),
                         sent > 0
                             ? Pill('arrSmsSentN'.trParams({'n': '$sent'}), color: p.success, icon: Icons.done_all_rounded)

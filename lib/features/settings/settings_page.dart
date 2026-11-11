@@ -583,7 +583,7 @@ class _RowActions extends StatelessWidget {
   final VoidCallback? onDelete;
   final String? editTooltip;
 
-  const _RowActions({this.onEdit, this.onDelete, this.editTooltip});
+  const _RowActions({this.onEdit, this.onDelete}) : editTooltip = null;
 
   @override
   Widget build(BuildContext context) {
