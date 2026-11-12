@@ -14,10 +14,10 @@ class Session {
   static late SharedPreferences _prefs;
 
   /// Anwani iliyowekwa wakati wa kujenga: `--dart-define=API_SERVER=https://api.domain.co.tz` (lazima kwa app ya simu).
-  static const String _builtServer = String.fromEnvironment('API_SERVER');
+  static const String _builtServer = String.fromEnvironment('API_SERVER', defaultValue: 'https://api.logistics.kodimaster.co.tz');
 
   /// Backend ya development (kompyuta yako). Badilisha kwa `--dart-define=DEV_SERVER=http://192.168.1.200:8000`.
-  static const String _devServer = String.fromEnvironment('DEV_SERVER', defaultValue: 'http://localhost:8000');
+  static const String _devServer = String.fromEnvironment('DEV_SERVER', defaultValue: 'https://api.logistics-uat.kodimaster.co.tz');
   // static const String _devServer = String.fromEnvironment('DEV_SERVER', defaultValue: 'http://localhost:8000');
 
   /// Anwani ya kawaida ya server:
