@@ -10,7 +10,6 @@ on:
 
 jobs:
   deploy-web:
-    # Only run if the PR was actually merged (not just closed without merging)
     if: github.event.pull_request.merged == true
     runs-on: self-hosted
 
