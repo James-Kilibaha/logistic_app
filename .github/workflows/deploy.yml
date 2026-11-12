@@ -21,6 +21,8 @@ jobs:
           ref: ${{ github.event.pull_request.merge_commit_sha }}
 
       - name: Sync Source to Target Directory and Build
+        env:
+          PUB_CACHE: /Data/pub-cache
         run: |
           set -e
           echo "Determining target environment..."
@@ -44,10 +46,10 @@ jobs:
           echo "Entering target directory and building Flutter web app..."
           cd "$TARGET_DIR"
           
-          # Ensure local user path includes Flutter SDK
+          # Ensure local user path includes Flutter SDK and custom pub cache
           export PATH="/home/ppfintech01/flutter/bin:$PATH"
           
-          # Run flutter pub get and build web release directly inside the target folder
+          # Run flutter pub get and build web release directly inside the target folder using /Data/pub-cache
           flutter pub get
           flutter build web --release
           
