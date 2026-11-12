@@ -22,6 +22,7 @@ jobs:
 
       - name: Sync Source to Target Directory and Build
         run: |
+          set -e
           echo "Determining target environment..."
           TARGET_BRANCH="${{ github.event.pull_request.base.ref }}"
           
@@ -29,6 +30,9 @@ jobs:
             TARGET_DIR="/Data/www/logistics/prod/frontend"
           elif [[ "$TARGET_BRANCH" == "uat" ]]; then
             TARGET_DIR="/Data/www/logistics/uat/frontend"
+          else
+            echo "Error: Unknown target branch $TARGET_BRANCH"
+            exit 1
           fi
           
           echo "Syncing source code to $TARGET_DIR..."
@@ -39,6 +43,9 @@ jobs:
           
           echo "Entering target directory and building Flutter web app..."
           cd "$TARGET_DIR"
+          
+          # Ensure local user path includes Flutter SDK
+          export PATH="/home/ppfintech01/flutter/bin:$PATH"
           
           # Run flutter pub get and build web release directly inside the target folder
           flutter pub get
