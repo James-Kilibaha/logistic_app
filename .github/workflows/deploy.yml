@@ -20,25 +20,28 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.merge_commit_sha }}
 
-      - name: Build Web Release
+      - name: Sync Source to Target Directory and Build
         run: |
-          echo "Building Flutter web release..."
-          flutter pub get
-          flutter build web --release
-
-      - name: Deploy to Server
-        run: |
-          echo "Starting frontend deployment..."
-          
-          # Check which branch it was merged into
+          echo "Determining target environment..."
           TARGET_BRANCH="${{ github.event.pull_request.base.ref }}"
           
           if [[ "$TARGET_BRANCH" == "main" ]]; then
-            echo "Deploying Frontend to Production..."
-            rsync -av --delete build/web/ /Data/www/logistics/prod/frontend/
-            echo "Production frontend deployment complete!"
+            TARGET_DIR="/Data/www/logistics/prod/frontend"
           elif [[ "$TARGET_BRANCH" == "uat" ]]; then
-            echo "Deploying Frontend to UAT..."
-            rsync -av --delete build/web/ /Data/www/logistics/uat/frontend/
-            echo "UAT frontend deployment complete!"
+            TARGET_DIR="/Data/www/logistics/uat/frontend"
           fi
+          
+          echo "Syncing source code to $TARGET_DIR..."
+          mkdir -p "$TARGET_DIR"
+          
+          # Copy source files (excluding .git and build folders) to the target directory
+          rsync -av --delete --exclude='.git' --exclude='build' --exclude='.dart_tool' ./ "$TARGET_DIR/"
+          
+          echo "Entering target directory and building Flutter web app..."
+          cd "$TARGET_DIR"
+          
+          # Run flutter pub get and build web release directly inside the target folder
+          flutter pub get
+          flutter build web --release
+          
+          echo "Build complete directly in $TARGET_DIR!"
